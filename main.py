@@ -1,4 +1,5 @@
 from tkinter import *
+import ast
 
 root = Tk()
 i = 0
@@ -19,6 +20,29 @@ def get_operators(opr):
 
 def clear():
     display.delete(0, END)
+
+
+def result():
+    display_string = display.get()
+    try:
+        node = ast.parse(display_string, mode='eval')
+        result = eval(compile(node, '<string>', 'eval'))
+        clear()
+        display.insert(0, result)
+    except Exception:
+        clear()
+        display.insert(0, "Error!!")
+
+
+def undo():
+    display_string = display.get()
+    if len(display_string) > 0:
+        new_string = display_string[:-1]
+        clear()
+        display.insert(0, new_string)
+    else:
+        clear()
+        display.insert(0, "")
 
 
 # Display
@@ -51,5 +75,7 @@ for x in range(4):
             count += 1
             button.grid(row=x + 3, column=y + 3)
 Button(root, text="Clear", width=3, height=2, command=clear).grid(row=6, column=0)
+Button(root, text="=", width=3, height=2, command=result).grid(row=6, column=2)
+Button(root, text="Del", width=3, height=2, command=undo).grid(row=6, column=4)
 
 root.mainloop()
